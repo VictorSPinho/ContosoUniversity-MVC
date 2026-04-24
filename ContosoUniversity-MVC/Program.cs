@@ -1,7 +1,14 @@
+using ContosoUniversity_MVC.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Ela registra o banco de dados no sistema antes do app ser "construído" (Build)
+builder.Services.AddDbContext<SchoolContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
