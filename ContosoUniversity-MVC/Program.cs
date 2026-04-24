@@ -10,7 +10,12 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<SchoolContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// filtro de exceção de banco de dados
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
 var app = builder.Build();
+
+CreateDbIfNotExists(app);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -34,3 +39,22 @@ app.MapControllerRoute(
 
 
 app.Run();
+
+void CreateDbIfNotExists(IHost host)
+{
+    using (var scope = host.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        try
+        {
+            var context = services.GetRequiredService<SchoolContext>();
+            // Isto chama a classe que preenche os dados iniciais
+            DbInitializer.Initialize(context);
+        }
+        catch (Exception ex)
+        {
+            var logger = services.GetRequiredService<ILogger<Program>>();
+            logger.LogError(ex, "Ocorreu um erro ao criar a base de dados.");
+        }
+    }
+}
