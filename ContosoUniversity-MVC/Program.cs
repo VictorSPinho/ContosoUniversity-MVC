@@ -8,7 +8,7 @@ builder.Services.AddControllersWithViews();
 
 // Ela registra o banco de dados no sistema antes do app ser "construído" (Build)
 builder.Services.AddDbContext<SchoolContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SchoolContext")));
 
 // filtro de exceção de banco de dados
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();

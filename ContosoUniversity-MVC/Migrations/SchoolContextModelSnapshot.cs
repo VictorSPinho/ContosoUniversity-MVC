@@ -79,6 +79,11 @@ namespace ContosoUniversity_MVC.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
@@ -115,33 +120,6 @@ namespace ContosoUniversity_MVC.Migrations
                     b.ToTable("Enrollment", (string)null);
                 });
 
-            modelBuilder.Entity("ContosoUniversity_MVC.Models.Instructor", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
-
-                    b.Property<string>("FirstMidName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("FirstName");
-
-                    b.Property<DateTime>("HireDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("Instructor", (string)null);
-                });
-
             modelBuilder.Entity("ContosoUniversity_MVC.Models.OfficeAssignment", b =>
                 {
                     b.Property<int>("InstructorID")
@@ -157,16 +135,13 @@ namespace ContosoUniversity_MVC.Migrations
                     b.ToTable("OfficeAssignment", (string)null);
                 });
 
-            modelBuilder.Entity("ContosoUniversity_MVC.Models.Student", b =>
+            modelBuilder.Entity("ContosoUniversity_MVC.Models.Person", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
-
-                    b.Property<DateTime>("EnrollmentDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("FirstMidName")
                         .IsRequired()
@@ -180,6 +155,28 @@ namespace ContosoUniversity_MVC.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("ID");
+
+                    b.ToTable("Person", (string)null);
+
+                    b.UseTptMappingStrategy();
+                });
+
+            modelBuilder.Entity("ContosoUniversity_MVC.Models.Instructor", b =>
+                {
+                    b.HasBaseType("ContosoUniversity_MVC.Models.Person");
+
+                    b.Property<DateTime>("HireDate")
+                        .HasColumnType("datetime2");
+
+                    b.ToTable("Instructor", (string)null);
+                });
+
+            modelBuilder.Entity("ContosoUniversity_MVC.Models.Student", b =>
+                {
+                    b.HasBaseType("ContosoUniversity_MVC.Models.Person");
+
+                    b.Property<DateTime>("EnrollmentDate")
+                        .HasColumnType("datetime2");
 
                     b.ToTable("Student", (string)null);
                 });
@@ -253,6 +250,24 @@ namespace ContosoUniversity_MVC.Migrations
                     b.Navigation("Instructor");
                 });
 
+            modelBuilder.Entity("ContosoUniversity_MVC.Models.Instructor", b =>
+                {
+                    b.HasOne("ContosoUniversity_MVC.Models.Person", null)
+                        .WithOne()
+                        .HasForeignKey("ContosoUniversity_MVC.Models.Instructor", "ID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ContosoUniversity_MVC.Models.Student", b =>
+                {
+                    b.HasOne("ContosoUniversity_MVC.Models.Person", null)
+                        .WithOne()
+                        .HasForeignKey("ContosoUniversity_MVC.Models.Student", "ID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("ContosoUniversity_MVC.Models.Course", b =>
                 {
                     b.Navigation("CourseAssignments");
@@ -269,8 +284,7 @@ namespace ContosoUniversity_MVC.Migrations
                 {
                     b.Navigation("CourseAssignments");
 
-                    b.Navigation("OfficeAssignment")
-                        .IsRequired();
+                    b.Navigation("OfficeAssignment");
                 });
 
             modelBuilder.Entity("ContosoUniversity_MVC.Models.Student", b =>
