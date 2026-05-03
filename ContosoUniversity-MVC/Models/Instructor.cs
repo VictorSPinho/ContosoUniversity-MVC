@@ -31,7 +31,18 @@ namespace ContosoUniversity_MVC.Models
             get { return LastName + ", " + FirstMidName; }
         }
 
-        public ICollection<CourseAssignment> CourseAssignments { get; set; }
-        public OfficeAssignment OfficeAssignment { get; set; }
+        private ICollection<CourseAssignment>? _courseAssignments;
+        public ICollection<CourseAssignment> CourseAssignments
+        {
+            get
+            {
+                return _courseAssignments ?? (_courseAssignments = new List<CourseAssignment>());
+            }
+            set
+            {
+                _courseAssignments = value;
+            }
+        }
+        public OfficeAssignment? OfficeAssignment { get; set; }
     }
 }
